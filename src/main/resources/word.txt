@@ -1,0 +1,6 @@
+kun test
+nai yi yi nai
+hello hello hi hi
+kun is a best player
+scala is a jvm based language
+java is a object-oriented language
