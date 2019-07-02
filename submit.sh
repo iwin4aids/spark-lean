@@ -1,17 +1,8 @@
+# 这里使用spark standalone模式，使用spark master来统一管理资源
 #!/usr/bin/env bash
-set HADOOP_USER_NAME=root
 spark-submit \
---class com.skloda.spark.WordCountLocal \
+--class com.skloda.spark.WordCountCluster \
 --master spark://localhost:7077 \
---name WordCount001 \
+--name WordCountCluster \
 ./target/spark-learn-1.0-SNAPSHOT.jar \
-hdfs://192.168.144.180:9000/input hdfs://192.168.144.180:9000/output
-
-#spark-submit --class org.apache.spark.examples.SparkPi \
-#--master spark://localhost:7077 \
-#--deploy-mode cluster \
-#--driver-memory 1g \
-#--executor-memory 1g \
-#--executor-cores 1 \
-#/usr/local/Cellar/apache-spark/2.4.3/libexec/examples/jars/spark-examples_2.11-2.4.3.jar \
-#10
+hdfs://192.168.144.180:9000/input/word_count.txt hdfs://192.168.144.180:9000/output

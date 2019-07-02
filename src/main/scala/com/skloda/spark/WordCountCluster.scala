@@ -4,18 +4,16 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
-  * scala没有静态类，使用object代替
+  * 集群模式运行word count
+  * 通过参数给出input和output路径（hdfs)
+  * 注意，写hdfs需要对应权限，设置环境变量HADOOP_USER_NAME=root
   */
-object WordCountLocal {
+object WordCountCluster {
 
-  /**
-    * 实际上是启动一个本地进程执行，类似一个嵌入式的spark环境
-    * 原理和spark-shell的本地模式类似
-    * @param args
-    */
   def main(args: Array[String]): Unit = {
-    //1、创建sparkConf对象,设置appName和master的地址，local[2]表示本地运行2个线程
-    val sparkConf: SparkConf = new SparkConf().setAppName("WordCount").setMaster("local[2]")
+
+    //1、创建sparkConf对象,设置appName和master的地址。集群模式 不使用 setMaster("local[2]")
+    val sparkConf = new SparkConf().setAppName("WordCountCluster")
 
     //2、创建spark context对象
     val sc = new SparkContext(sparkConf)
@@ -24,7 +22,7 @@ object WordCountLocal {
     sc.setLogLevel("WARN")
 
     // 3、读取数据文件
-    val data: RDD[String] = sc.textFile("src/main/resources/word.txt")
+    val data: RDD[String] = sc.textFile(args(0))
 
     //4、切分文件中的每一行,返回文件所有单词。flatMap(_.split(" ")) 表示每一行数据以空格切分
     val words: RDD[String] = data.flatMap(_.split(" "))
@@ -39,14 +37,10 @@ object WordCountLocal {
     //按照单词出现的次数升序排列：sortBy(_._2) 	      false 表示 降序 排序
     val sortResult: RDD[(String, Int)] = result.sortBy(_._2, false)
 
-    //7、收集结果数据
-    val finalResult: Array[(String, Int)] = sortResult.collect()
+    //7、结果数据保存在HDFS上
+    sortResult.saveAsTextFile(args(1))
 
-    //8、打印结果数据
-    finalResult.foreach(x => println(x))
-
-    //9、关闭sc
+    //8、关闭sc
     sc.stop()
   }
-
 }

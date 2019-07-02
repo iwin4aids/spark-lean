@@ -10,15 +10,16 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <scala.version>2.12.8</scala.version>
+        <scala.version>2.11.12</scala.version>
         <spark.version>2.4.3</spark.version>
-        <spark.scala.version>2.12</spark.scala.version>
+        <spark.scala.version>2.11</spark.scala.version>
         <PermGen>64m</PermGen>
         <MaxPermGen>512m</MaxPermGen>
         <CodeCacheSize>512m</CodeCacheSize>
     </properties>
 
     <dependencies>
+        <!-- 注意这里scala版本很容易有坑，必须和运行时spark环境的scala一致-->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
@@ -53,7 +54,7 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>4.1.0</version>
                 <executions>
                     <execution>
                         <id>eclipse-add-source</id>
@@ -86,7 +87,6 @@
                 <configuration>
                     <scalaVersion>${scala.version}</scalaVersion>
                     <recompileMode>incremental</recompileMode>
-                    <useZincServer>true</useZincServer>
                     <args>
                         <arg>-unchecked</arg>
                         <arg>-deprecation</arg>
@@ -104,7 +104,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -116,7 +116,6 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 </project>
