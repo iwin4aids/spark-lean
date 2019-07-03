@@ -1,5 +1,10 @@
 package com.skloda.spark
 
+import java.net.URI
+
+import com.skloda.spark.util.HDFSHelper
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.FileSystem
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -10,6 +15,8 @@ import org.apache.spark.{SparkConf, SparkContext}
   */
 object WordCountCluster {
 
+  val HDFS_URL = "hdfs://192.168.144.180:9000"
+
   def main(args: Array[String]): Unit = {
 
     //1、创建sparkConf对象,设置appName和master的地址。集群模式 不使用 setMaster("local[2]")
@@ -19,7 +26,7 @@ object WordCountCluster {
     val sc = new SparkContext(sparkConf)
 
     //设置日志输出级别
-    sc.setLogLevel("WARN")
+    sc.setLogLevel("INFO")
 
     // 3、读取数据文件
     val data: RDD[String] = sc.textFile(args(0))
@@ -37,10 +44,14 @@ object WordCountCluster {
     //按照单词出现的次数升序排列：sortBy(_._2) 	      false 表示 降序 排序
     val sortResult: RDD[(String, Int)] = result.sortBy(_._2, false)
 
+    //删除已存在的目录
+    HDFSHelper.deleteFile(FileSystem.get(new URI(HDFS_URL), new Configuration()), args(1))
+
     //7、结果数据保存在HDFS上
     sortResult.saveAsTextFile(args(1))
 
     //8、关闭sc
     sc.stop()
+
   }
 }
