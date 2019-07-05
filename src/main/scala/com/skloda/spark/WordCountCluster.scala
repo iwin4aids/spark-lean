@@ -48,6 +48,7 @@ object WordCountCluster {
     HDFSHelper.deleteFile(FileSystem.get(new URI(HDFS_URL), new Configuration()), args(1))
 
     //7、结果数据保存在HDFS上
+    sortResult.foreach(result => println(result))
     sortResult.saveAsTextFile(args(1))
 
     //8、关闭sc
